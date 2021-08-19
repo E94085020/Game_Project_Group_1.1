@@ -3,12 +3,12 @@ from typing import TYPE_CHECKING
 import pygame
 import os
 from attack_strategy import *
-from alcohol import Alcohol_atk
+from setting import IMAGE_PATH,SOUND_PATH
 from math import *
 if TYPE_CHECKING:
     from attack_strategy import AttackStrategy
-HCLO_IMAGE=pygame.transform.scale(pygame.image.load(os.path.join("images", "hclo.png")), (25, 15))
-ALCOHOL_IMAGE=pygame.transform.scale(pygame.image.load(os.path.join("images", "alcohol.png")), (120, 120))
+HCLO_IMAGE=pygame.transform.scale(pygame.image.load(os.path.join(IMAGE_PATH, "hclo.png")), (25, 15))
+ALCOHOL_IMAGE=pygame.transform.scale(pygame.image.load(os.path.join(IMAGE_PATH, "alcohol.png")), (150, 150))
 
 class Bullet:
     def __init__(self,x:int,y:int,x2:int,y2:int, image, attack_strategy : AttackStrategy):
@@ -77,15 +77,12 @@ class Bullet:
 class BulletGroup:
         def __init__(self):
             self.__bullet=[]#保存畫面上的子彈所用的list
-            self.alcohol_atk=Alcohol_atk()#酒精攻擊所用的class
         
-        def add(self,x,y,x2,y2,virusgroup : list):
+        def add(self,x,y,x2,y2):
             '''
             根據滑鼠和玩家的位置計算出發射的角度，再找出子彈的向量
-            '''
-            if((x2-x)!=0):
-                for en in virusgroup:
-                     en.pass_dmg=False#每次進行攻擊都會把場上的怪物標記為可攻擊        
+            ''' 
+            if((x2-x)!=0):           
                 self.rad=atan((y2-y)/(x2-x))
                 self.del_x=cos(self.rad)
                 self.del_y=sin(self.rad)
@@ -94,24 +91,17 @@ class BulletGroup:
                     self.del_y*=-1
                 self.bl=Bullet.HCLO(x,y,self.del_x,self.del_y)
                 self.__bullet.append(self.bl)
-        def alcohol_shot(self,x,y,x2,y2,virusgroup):#用於發射酒精彈藥
-            if(self.alcohol_atk.count_bullet!=0 and self.alcohol_atk.cd==self.alcohol_atk.max_cd):#先判斷酒精是否有彈藥和酒精攻擊是否在冷卻
-                if((x2-x)!=0):#以下邏輯與一般攻擊一樣
-                    for en in virusgroup:
-                        en.pass_dmg=False
-                    self.rad=atan((y2-y)/(x2-x))
-                    self.del_x=cos(self.rad)
-                    self.del_y=sin(self.rad)
-                    if((x2-x)<0):
-                        self.del_x*=-1
-                        self.del_y*=-1
-                    self.bl=Bullet.Alcohol(x,y,self.del_x,self.del_y)
-                    self.alcohol_atk.charged-=self.alcohol_atk.charger_time#重置充能時間
-                    self.alcohol_atk.cd=0#發射后進入冷卻
-                    self.bl=Bullet.Alcohol(x,y,self.del_x,self.del_y)        
-                    self.__bullet.append(self.bl)            
-        def draw(self,win):
-            self.alcohol_atk.draw(win)  #畫出酒精攻擊的充能進度          
+        def alcohol_shot(self,x,y,x2,y2):#用於發射酒精彈藥
+            if((x2-x)!=0):#以下邏輯與一般攻擊一樣
+                self.rad=atan((y2-y)/(x2-x))
+                self.del_x=cos(self.rad)
+                self.del_y=sin(self.rad)
+                if((x2-x)<0):
+                    self.del_x*=-1
+                    self.del_y*=-1
+                self.bl=Bullet.Alcohol(x,y,self.del_x,self.del_y)        
+                self.__bullet.append(self.bl)            
+        def draw(self,win):     
             if(self.__bullet):        
                 for bu in self.__bullet: #畫出子彈
                     bu.draw(win)                    
@@ -119,10 +109,11 @@ class BulletGroup:
         def update(self,virusgroup : list):
             for bu in self.__bullet:
                 bu.attack(virusgroup)
-            self.alcohol_atk.cd_count()
             if(self.__bullet):        
                 for bu in self.__bullet:           
                     bu.move()
                     if(bu.del_bullet()==True):
                         self.__bullet.remove(bu)
+        def get(self):
+            return self.__bullet
 

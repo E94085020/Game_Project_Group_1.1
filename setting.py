@@ -1,6 +1,10 @@
-WIN_HEIGHT=600 
-WIN_WIDTH=1024
+import os
+WIN_HEIGHT=720
+WIN_WIDTH=1230
 FPS =60
+
+IMAGE_PATH=os.path.join(os.path.dirname(__file__),"images")
+SOUND_PATH=os.path.join(os.path.dirname(__file__),"sound")
 
 GRAY = (128,128,128)
 BLACK = (0, 0, 0)

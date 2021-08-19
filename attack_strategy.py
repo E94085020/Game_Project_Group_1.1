@@ -24,5 +24,5 @@ class AOE(AttackStrategy):
             '''
             if (bullet.rect.collidepoint(en.rect.center) and en.pass_dmg==False):
                 en.get_hurt(bullet.dmg)
-                en.rect.centerx+=bullet.del_x#酒精帶有擊退效果，會根據子彈的向量數據擊退病毒
-                en.rect.centery+=bullet.del_y
+                en.rect.centerx+=bullet.del_x*2#酒精帶有擊退效果，會根據子彈的向量數據擊退病毒
+                en.rect.centery+=bullet.del_y*2
